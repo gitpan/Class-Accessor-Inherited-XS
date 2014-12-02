@@ -3,7 +3,7 @@ use 5.010001;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 require XSLoader;
 XSLoader::load('Class::Accessor::Inherited::XS', $VERSION);
@@ -72,6 +72,7 @@ Class::Accessor::Inherited::XS - fast XS inherited accessors
   };
   
   #or in a Class::Accessor::Grouped-like fashion
+  use parent 'Class::Accessor::Inherited::XS';
   __PACKAGE__->mk_inherited_accessors('foo', ['bar', 'bar_key']);
 
 =head1 DESCRIPTION

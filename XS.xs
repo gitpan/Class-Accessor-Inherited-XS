@@ -1,11 +1,10 @@
 #define PERL_NO_GET_CONTEXT
 
-extern "C" {
-    #include "EXTERN.h"
-    #include "perl.h"
-    #include "XSUB.h"
-}
+#include "EXTERN.h"
+#include "perl.h"
+#include "XSUB.h"
 #include "ppport.h"
+
 #include "xs/compat.h"
 #include "xs/double_hek.h"
 
@@ -23,7 +22,7 @@ CAIXS_install_accessor(pTHX_ SV* full_name, SV* hash_key)
     if (!cv) croak("Can't install XS accessor");
 
     const char* hash_key_buf = SvPV(hash_key, len);
-    SV* keysv = newSV(sizeof(double_hek) + len);
+    SV* keysv = newSV(sizeof(double_hek) + (len > 3 ? len - 3 : 0));
     double_hek* hent = (double_hek*)SvPVX(keysv);
 
     HEK_LEN(hent) = len;
@@ -140,32 +139,29 @@ XS(CAIXS_inherited_accessor)
         XSRETURN(1);
     }
     
-    if (stash && (svp = CAIXS_FETCH_PKG_HEK(stash, hent))) {
-        SV* sv = GvSV(*svp);
-        if (sv && SvOK(sv)) {
-            PUSHs(sv);
-            XSRETURN(1);
-        }
+    #define TRY_FETCH_PKG_VALUE(stash, hent, svp)               \
+    if (stash && (svp = CAIXS_FETCH_PKG_HEK(stash, hent))) {    \
+        SV* sv = GvSV(*svp);                                    \
+        if (sv && SvOK(sv)) {                                   \
+            PUSHs(sv);                                          \
+            XSRETURN(1);                                        \
+        }                                                       \
     }
+
+    TRY_FETCH_PKG_VALUE(stash, hent, svp);
 
     // Now try all superclasses
     AV* supers = mro_get_linear_isa(stash);
-    int len = av_len(supers);
 
-    HE* he;
-    for (int i = 1; i <= len; ++i) {
-        svp = av_fetch(supers, i, 0);
-        if (svp) {
-            SV* super = (SV *)*svp;
-            stash = gv_stashsv(super, 0);
+    SV* elem;
+    SSize_t fill = AvFILLp(supers) + 1;
+    SV** supers_list = AvARRAY(supers);
+    while (--fill >= 0) {
+        elem = *supers_list++;
 
-            if (stash && (svp = CAIXS_FETCH_PKG_HEK(stash, hent))) {
-                SV* sv = GvSV(*svp);
-                if (sv && SvOK(sv)) {
-                    PUSHs(sv);
-                    XSRETURN(1);
-                }
-            }
+        if (elem) {
+            stash = gv_stashsv(elem, 0);
+            TRY_FETCH_PKG_VALUE(stash, hent, svp);
         }
     }
 
