@@ -21,12 +21,12 @@ cmpthese(
         pkg_cag           => sub { AAA2->a },
         pkg_gparent_caixs => sub { CCC->a },
         pkg_gparent_cag   => sub { CCC2->a },
-#        pkg_set_caix      => sub { AAA->a(42) },
-#        pkg_set_cag       => sub { AAA2->a(42) },
-#        obj_caix          => sub { $o->a },
-#        obj_cag           => sub { $o2->a },
-#        obj_cxa           => sub { $o2->simple },
-#        obj_direct        => sub { $o2->{a} },
+        pkg_set_caix      => sub { AAA->a(42) },
+        pkg_set_cag       => sub { AAA2->a(42) },
+        obj_caix          => sub { $o->a },
+        obj_cag           => sub { $o2->a },
+        obj_cxa           => sub { $o2->simple },
+        obj_direct        => sub { $o2->{a} },
     }
 );
 
