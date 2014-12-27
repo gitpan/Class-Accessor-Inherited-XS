@@ -3,7 +3,8 @@ use 5.010001;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
+our $PREFIX  = '__cag_';
 
 require XSLoader;
 XSLoader::load('Class::Accessor::Inherited::XS', $VERSION);
@@ -43,10 +44,11 @@ XSLoader::load('Class::Accessor::Inherited::XS', $VERSION);
         }
     }
 
+    #this function is NOT part of the public API
     sub mk_inherited_accessor {
         my($class, $name, $field) = @_;
 
-        Class::Accessor::Inherited::XS::install_inherited_accessor("${class}::${name}", $field);
+        Class::Accessor::Inherited::XS::install_inherited_accessor("${class}::${name}", $field, $PREFIX.$field);
     }
 }
 

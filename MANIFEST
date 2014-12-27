@@ -27,6 +27,5 @@ t/lib/ExtraInheritedGroups.pm
 t/lib/SuperInheritedGroups.pm
 XS.xs
 xs/compat.h
-xs/double_hek.h
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)
